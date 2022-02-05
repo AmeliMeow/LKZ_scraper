@@ -12,6 +12,7 @@ class WordDB:
     def __init__(self, path=":memory:"):
         self.conn = sqlite3.connect(path)
         c = self.conn.cursor()
+        # setting UNIQUE on word column deduplicates words
         c.execute('''
             CREATE TABLE IF NOT EXISTS "words" (
 	            "id"	INTEGER,
@@ -31,7 +32,7 @@ class WordDB:
 
     def get_words(self, order_col='word', order='ASC', limit=''):
         query = f'SELECT word, length FROM words ORDER BY {order_col} {order}'
-        if limit != '': query += f' LIMIT {limit}'
+        if limit != '': query += f' LIMIT {limit}' # if limit is not an empty string set LIMIT
         c = self.conn.cursor()
         c.execute(query)
         return c.fetchall()
@@ -42,7 +43,7 @@ class WordDB:
             for word in word_list:
                 fout.write(word[0] + end)
 
-
+# alphbet for search queries 
 alphabet = ['A', 'Ą', 'B', 'C', 'Č', 'D', 'E', 'Ę', 'Ė', 'F', 'G', 'H', 'I', 'Į', 'Y', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'Š', 'T', 'U', 'Ų', 'Ū', 'V', 'Z', 'Ž']
 
 
@@ -72,7 +73,7 @@ if '__main__' == __name__:
         print('Got %d words.' % len(words))
         db.insert(words)
 
-        # print(db.get_words(limit=10))
+    # print(db.get_words(limit=10))
     print('Saving words to file...')
     db.dump_to_file('lkz_words.txt')
     print('Done!')
